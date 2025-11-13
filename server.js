@@ -30,11 +30,11 @@ class Server {
     app.use('/api/mascotas', this.#routerMascotas);
 
     const server = app.listen(this.#port, () => {
-      console.log(`🐾 Servidor escuchando en http://localhost:${this.#port}`);
+      console.log(`Servidor escuchando en http://localhost:${this.#port}`);
       console.log(`Persistencia: ${process.env.MODO_PERSISTENCIA}`);
     });
 
-    server.on('error', err => console.error(`❌ Error en servidor: ${err.message}`));
+    server.on('error', err => console.error(`Error en servidor: ${err.message}`));
   }
 }
 

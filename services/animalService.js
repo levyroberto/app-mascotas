@@ -1,16 +1,39 @@
 import axios from "axios";
 import dotenv from 'dotenv';
+dotenv.config();
 
-const API_URL = "https://api.api-ninjas.com/v1/animals";
-const API_KEY = dotenv.config().parsed.API_NINJA_KEY;
+const BASE_URL =  process.env.MOCKAPI_BASE_URL;
 
-export async function buscarAnimal(nombre) {
-  const res = await axios.get(API_URL, {
-    params: { name: nombre },
-    headers: {
-      "X-Api-Key": API_KEY
-    }
+export async function obtenerTipoPorNombre(nombreTipo) {
+  const url = `${BASE_URL}/animals`;
+
+  const res = await axios.get(url, {
+    params: { type: nombreTipo }
   });
 
-  return res.data; 
+  return res.data[0] || null;
+}
+
+export async function obtenerRazasPorTipo(typeId) {
+  const url = `${BASE_URL}/raza`;
+
+  const res = await axios.get(url, {
+    params: { typeId }
+  });
+
+  return res.data;
+}
+
+export async function validarRaza(tipo, raza) {
+  const tipoEncontrado = await obtenerTipoPorNombre(tipo);
+
+  if (!tipoEncontrado) return false;
+
+  const razas = await obtenerRazasPorTipo(tipoEncontrado.id);
+
+  const match = razas.some(
+    (r) => r.name && r.name.toLowerCase() === raza.toLowerCase()
+  );
+
+  return match;
 }

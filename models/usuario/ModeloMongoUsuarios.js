@@ -1,4 +1,5 @@
 import Usuario from './usuarioSchema.js';
+import Mascota from '../mascota/mascotaSchema.js';
 
 class ModeloMongoUsuarios {
   async obtenerTodos() {
@@ -33,6 +34,7 @@ class ModeloMongoUsuarios {
   }
 
   async borrar(id) {
+    await Mascota.deleteMany({ usuarioId: id });
     return await Usuario.findByIdAndDelete(id);
   }
 }

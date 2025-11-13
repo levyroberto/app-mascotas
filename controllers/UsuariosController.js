@@ -25,7 +25,7 @@ class ControllerUsuarios {
 
   guardar = async (req, res) => {
     try {
-      const { nombreCompleto, direccion, email } = req.body;
+      const { nombreCompleto, direccion, email, password } = req.body;
   
       if (!nombreCompleto || nombreCompleto.trim() === "") {
         return res.status(400).json({ message: "El nombre es obligatorio" });
@@ -34,9 +34,18 @@ class ControllerUsuarios {
       if (!email || email.trim() === "") {
         return res.status(400).json({ message: "El email es obligatorio" });
       }
+
+      if (!password || password.trim() === "") {
+        return res.status(400).json({ message: "La contraseña es obligatoria" });
+      }
   
-      const nuevo = await Usuario.guardar({ nombreCompleto, direccion, email });
-      res.status(201).json(nuevo);
+      const nuevo = await Usuario.guardar({ 
+        nombreCompleto, 
+        direccion, 
+        email, 
+        password 
+      });
+      res.status(201).json({ message: 'Usuario creado correctamente', usuario: nuevo });
   
     } catch (error) {
       res.status(400).json({ message: error.message });

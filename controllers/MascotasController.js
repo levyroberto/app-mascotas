@@ -1,5 +1,5 @@
 import Mascota from '../models/mascota/index.js';
-import { buscarAnimal } from '../services/animalService.js';
+import { validarRaza } from '../services/animalService.js';
 import Usuario from '../models/usuario/index.js';
 
 class ControllerMascotas {
@@ -35,43 +35,36 @@ class ControllerMascotas {
 
   guardar = async (req, res) => {
     try {
-      const { tipo, raza, edad, cantidadVacunas, usuarioId } = req.body;
-  
+      const { nombre, tipo, raza, edad, cantidadVacunas, usuarioId, foto } = req.body;
+
       if (!tipo || !raza) {
         return res.status(400).json({ message: "Tipo y raza son obligatorios." });
       }
-  
+
       if (typeof raza !== "string" || raza.trim() === "") {
         return res.status(400).json({ message: "Raza inválida." });
       }
-  
-      const animales = await buscarAnimal(raza);
-  
-      if (!animales || animales.length === 0) {
-        return res.status(400).json({ message: "Raza no encontrada en la API externa." });
+
+      if (!usuarioId) {
+        return res.status(400).json({ message: "usuarioId es obligatorio." });
       }
-  
-      const animal = animales[0];
-  
-      const tipoReal = animal.taxonomy.family;
-      const razaReal = animal.name;
-  
-      if (razaReal.toLowerCase() !== raza.toLowerCase().trim()) {
-        return res.status(400).json({ message: "La raza no coincide con la API externa." });
-      }
-  
-      if (tipoReal.toLowerCase() !== tipo.toLowerCase().trim()) {
+
+      const razaEsValida = await validarRaza(tipo, raza);
+
+      if (!razaEsValida) {
         return res.status(400).json({
-          message: `La familia/tipo '${tipo}' no coincide con la API externa (${tipoReal}).`
+          message: `La raza "${raza}" no corresponde al tipo "${tipo}".`
         });
       }
   
       const mascota = await Mascota.guardar({
+        nombre,
         tipo, 
         raza,
         edad,
         cantidadVacunas,
-        usuarioId
+        usuarioId,
+        foto
       });
 
       await Usuario.agregarMascota(
@@ -103,7 +96,7 @@ class ControllerMascotas {
       if (!borrada) {
         return res.status(404).json({ message: 'Mascota no encontrada' });
       }
-      await Usuario.borrarMascota(borrada.usuarioId, borrada.id);
+      await Usuario.borrarMascota(borrada.usuarioId, borrada._id);
       res.json({ message: 'Mascota eliminada', borrada });
     } catch (error) {
       res.status(500).json({ message: 'Error al borrar mascota', error: error.message });
