@@ -1,21 +1,38 @@
 {
-  "name": "apilibros",
+  "name": "api-mascotas",
   "version": "1.0.0",
   "description": "",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node index.js",
+    "dev": "nodemon index.js",
+    "test-api": "mocha test/api-test.js"
   },
+  "type": "module",
   "keywords": [],
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "axios": "^1.13.2",
+    "chai": "^6.2.1",
     "cors": "^2.8.5",
     "dotenv": "^17.2.3",
-    "express": "^5.1.0",
-    "mongoose": "^8.19.2"
+    "express": "^4.19.2",
+    "mocha": "^11.7.5",
+    "mongoose": "^8.19.3",
+    "supertest": "^7.1.4"
   },
   "devDependencies": {
+    "@types/node": "^24.10.1",
     "nodemon": "^3.1.10"
-  }
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/levyroberto/TP3-RL.git"
+  },
+  "bugs": {
+    "url": "https://github.com/levyroberto/TP3-RL/issues"
+  },
+  "homepage": "https://github.com/levyroberto/TP3-RL#readme"
 }
