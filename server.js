@@ -1,6 +1,7 @@
 import express from 'express';
 import RouterUsuarios from './router/usuariosRouter.js';
 import RouterMascotas from './router/mascotasRouter.js';
+import RouterAuth from './router/authRoutes.js';
 import { conectarDB } from './config/db.js';
 
 class Server {
@@ -28,6 +29,7 @@ class Server {
 
     app.use('/api/usuarios', this.#routerUsuarios);
     app.use('/api/mascotas', this.#routerMascotas);
+    app.use('/api/auth', RouterAuth);
 
     const server = app.listen(this.#port, () => {
       console.log(`Servidor escuchando en http://localhost:${this.#port}`);
