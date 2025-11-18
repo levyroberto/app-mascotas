@@ -7,8 +7,11 @@ const ctrl = new ControllerMascotas();
 
 
 router.get('/', auth, ctrl.obtenerTodas);
-router.get('/:id', auth, ctrl.obtenerPorId);
+
 router.get('/usuario/:usuarioId', auth, ctrl.obtenerPorUsuario);
+router.get('/listar-por-tipo-y-edad', auth, ctrl.listarPorTipoYEdad);
+
+router.get('/:id', auth, ctrl.obtenerPorId);
 
 router.post('/', auth, ctrl.guardar);
 router.put('/:id', auth, ctrl.actualizar);

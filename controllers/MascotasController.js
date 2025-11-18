@@ -1,6 +1,7 @@
 import Mascota from '../models/mascota/index.js';
 import { validarRaza } from '../services/animalService.js';
 import Usuario from '../models/usuario/index.js';
+import MascotaService from '../services/mascotaService.js';
 
 class ControllerMascotas {
     obtenerTodas = async (req, res) => {
@@ -30,6 +31,15 @@ class ControllerMascotas {
       res.json(mascotas);
     } catch (err) {
       res.status(500).json({ message: 'Error al obtener mascotas por usuario', error: err.message });
+    }
+  };
+
+  listarPorTipoYEdad = async (req, res) => {
+    try {
+      const data = await MascotaService.listarPorTipoYEdad();
+      res.json(data);
+    } catch (e) {
+      res.status(500).json({ error: e.message });
     }
   };
 
