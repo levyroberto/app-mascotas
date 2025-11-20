@@ -2,10 +2,10 @@ import jwt from 'jsonwebtoken';
 import Usuario from '../models/usuario/usuarioSchema.js';
 import bcryptjs from 'bcryptjs';
 
-const JWT_SECRET = process.env.JWT_SECRET;
 
 export const login = async (req, res) => {
   try {
+    const JWT_SECRET = process.env.JWT_SECRET;
     const { email, password } = req.body;
     if (!email || !password) {
       return res.status(400).json({ message: 'Email y password requeridos' });
