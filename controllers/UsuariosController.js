@@ -29,16 +29,23 @@ class ControllerUsuarios {
     try {
       const { nombreCompleto, direccion, email, password } = req.body;
   
-      if (!nombreCompleto || nombreCompleto.trim() === "") {
-        return res.status(400).json({ message: "El nombre es obligatorio" });
-      }
-  
-      if (!email || email.trim() === "") {
-        return res.status(400).json({ message: "El email es obligatorio" });
-      }
 
+      const errors = {};
+
+      if (!nombreCompleto || nombreCompleto.trim() === "") {
+        errors.nombreCompleto = "El nombre es obligatorio";
+      }
+      
+      if (!email || email.trim() === "") {
+        errors.email = "El email es obligatorio";
+      }
+      
       if (!password || password.trim() === "") {
-        return res.status(400).json({ message: "La contraseña es obligatoria" });
+        errors.password = "La contraseña es obligatoria";
+      }
+      
+      if (Object.keys(errors).length > 0) {
+        return res.status(400).json(errors);
       }
   
       const nuevo = await Usuario.guardar({ 
@@ -103,7 +110,10 @@ class ControllerUsuarios {
       return res.status(201).json({ message: 'Usuario creado. Revisa tu email para activarlo.' });
 
     } catch (error) {
-      return res.status(400).json({ message: error.message });
+      if (typeof error === "object" && !error.message) {
+        return res.status(400).json(error);
+      }
+      return res.status(400).json({ general: error.message });
     }
   };
 
