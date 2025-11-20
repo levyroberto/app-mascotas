@@ -1,5 +1,8 @@
 import Usuario  from '../models/usuario/index.js';
+import usuarioSchema from '../models/usuario/usuarioSchema.js';
 import Mascota from '../models/mascota/index.js';
+import jwt from 'jsonwebtoken';
+import EmailService from '../services/emailService.js';
 
 class ControllerUsuarios {
   obtenerTodos = async (req, res) => {
@@ -43,14 +46,101 @@ class ControllerUsuarios {
         nombreCompleto, 
         direccion, 
         email, 
-        password 
+        password,
+        isActive: false
       });
-      res.status(201).json({ message: 'Usuario creado correctamente', usuario: nuevo });
+
+
+      const token = jwt.sign(
+        { id: nuevo._id },
+        process.env.JWT_EMAIL_SECRET,
+        { expiresIn: '1d' }
+      );
+
+      const link = `${process.env.BASE_URL}/api/usuarios/activar/${token}`;
+
+      await EmailService.enviar(
+        email,
+        "Activa tu cuenta",
+        `
+        <div style="font-family:Arial,Helvetica,sans-serif; padding:20px; max-width:500px; margin:auto; background:#ffffff; color:#333; border-radius:8px;">
+      
+          <h2 style="text-align:center; color:#222;">Bienvenido, ${nombreCompleto}</h2>
+      
+          <p style="font-size:16px; line-height:1.5;">
+            Tu cuenta está casi lista. Solo falta un paso más:
+          </p>
+      
+          <div style="text-align:center; margin:30px 0;">
+            <a href="${link}"
+               style="
+                 display:inline-block;
+                 padding:12px 24px;
+                 background:#4CAF50;
+                 color:white;
+                 font-size:16px;
+                 font-weight:bold;
+                 text-decoration:none;
+                 border-radius:6px;
+               ">
+              Activar cuenta
+            </a>
+          </div>
+      
+          <p style="font-size:14px; color:#555;">
+            Si el botón no funciona, podés copiar y pegar este enlace en tu navegador:
+          </p>
+      
+          <p style="font-size:13px; word-break:break-all; color:#444;">
+            ${link}
+          </p>
+      
+          <p style="font-size:12px; color:#777; margin-top:20px;">
+            Este enlace expira en 24 horas.
+          </p>
+      
+        </div>
+        `
+      );
+      
+
+      return res.status(201).json({
+        message: 'Usuario creado. Revisa tu email para activarlo.'
+      });
   
     } catch (error) {
       res.status(400).json({ message: error.message });
     }
   };
+
+  activarCuenta = async (req, res) => {
+    try {
+      const { token } = req.params;
+  
+      const decoded = jwt.verify(token, process.env.JWT_EMAIL_SECRET);
+  
+      const userAfter = await usuarioSchema.findByIdAndUpdate(
+        decoded.id,
+        { isActive: true },
+        { new: true }
+      );
+  
+      if (!userAfter) {
+        return res.status(404).json({
+          message: "Usuario no encontrado. No se pudo activar la cuenta."
+        });
+      }
+  
+      return res.json({ message: "Cuenta activada correctamente." });
+  
+    } catch (err) {
+      return res.status(400).json({
+        message: "Token inválido o expirado.",
+        error: err.message
+      });
+    }
+  };
+  
 
   actualizar = async (req, res) => {
     try {

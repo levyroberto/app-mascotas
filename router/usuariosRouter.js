@@ -7,6 +7,7 @@ const ctrl = new ControllerUsuarios();
 
 router.post('/', ctrl.guardar);
 
+router.get('/activar/:token', ctrl.activarCuenta.bind(ctrl));
 router.get('/', auth, ctrl.obtenerTodos);
 router.get('/:id', auth, ctrl.obtenerPorId);
 router.put('/:id', auth, ctrl.actualizar);

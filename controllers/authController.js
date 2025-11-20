@@ -16,6 +16,10 @@ export const login = async (req, res) => {
       return res.status(401).json({ message: 'Credenciales inválidas' });
     }
 
+    if (!usuario.isActive) {
+      return res.status(403).json({ message: 'La cuenta no está activada. Revisa tu email.' });
+    }
+
     const ok = await bcryptjs.compare(password, usuario.password);
     if (!ok) {
       return res.status(401).json({ message: 'Credenciales inválidas' });

@@ -15,6 +15,7 @@ const usuarioSchema = new mongoose.Schema({
     type: String,
     required: true
   },
+  isActive: { type: Boolean, default: false },
   mascotas: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Mascota' }]
 });
 
