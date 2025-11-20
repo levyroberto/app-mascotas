@@ -21,6 +21,15 @@ class ModeloMongoUsuarios {
     }
   }
 
+  async activarCuenta(id) {
+    return await Usuario.findByIdAndUpdate(
+      id,
+      { isActive: true },
+      { new: true }
+    );
+  }
+  
+
   async agregarMascota(id, mascotaId) {
     return await Usuario.findByIdAndUpdate(id, { $push: { mascotas: mascotaId } }, { new: true });
   }
