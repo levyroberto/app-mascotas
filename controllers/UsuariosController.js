@@ -1,5 +1,4 @@
 import Usuario  from '../models/usuario/index.js';
-import usuarioSchema from '../models/usuario/usuarioSchema.js';
 import Mascota from '../models/mascota/index.js';
 import jwt from 'jsonwebtoken';
 import EmailService from '../services/emailService.js';
@@ -119,10 +118,8 @@ class ControllerUsuarios {
   
       const decoded = jwt.verify(token, process.env.JWT_EMAIL_SECRET);
   
-      const userAfter = await usuarioSchema.findByIdAndUpdate(
-        decoded.id,
-        { isActive: true },
-        { new: true }
+      const userAfter = await Usuario.activarCuenta(
+        decoded.id
       );
   
       if (!userAfter) {
