@@ -15,10 +15,18 @@ class ModeloMongoUsuarios {
       return await Usuario.create(usuario);
     } catch (error) {
       if (error.message.includes('email') || error.code === 11000) {
-        throw new Error('Ya existe un usuario con ese correo electrónico');
+        throw { email: "Ya existe un usuario con ese correo electrónico" };
       }
-      throw new Error('Error al guardar el usuario');
-    }
+        if (error.errors) {
+          const fieldErrors = {};
+          for (const field in error.errors) {
+            fieldErrors[field] = error.errors[field].message;
+          }
+          throw fieldErrors;
+        }
+
+        throw { general: "Error al guardar el usuario" };
+      }
   }
 
   async activarCuenta(id) {
