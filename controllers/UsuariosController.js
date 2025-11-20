@@ -91,15 +91,6 @@ class ControllerUsuarios {
               Activar cuenta
             </a>
           </div>
-      
-          <p style="font-size:14px; color:#555;">
-            Si el botón no funciona, podés copiar y pegar este enlace en tu navegador:
-          </p>
-      
-          <p style="font-size:13px; word-break:break-all; color:#444;">
-            ${link}
-          </p>
-      
           <p style="font-size:12px; color:#777; margin-top:20px;">
             Este enlace expira en 24 horas.
           </p>
@@ -128,18 +119,34 @@ class ControllerUsuarios {
       );
   
       if (!userAfter) {
-        return res.status(404).json({
-          message: "Usuario no encontrado. No se pudo activar la cuenta."
-        });
+        return res.send(`
+          <div style="font-family:Arial; padding:40px; text-align:center;">
+            <h1 style="color:#d9534f;">Usuario no encontrado</h1>
+            <p>No se pudo activar la cuenta.</p>
+          </div>
+        `);
       }
   
-      return res.json({ message: "Cuenta activada correctamente." });
+      return res.send(`
+        <div style="
+          font-family:Arial;
+          padding:40px;
+          text-align:center;
+          max-width:400px;
+          margin:auto;
+        ">
+          <h1 style="color:#28a745;">✔ Cuenta activada correctamente</h1>
+          <p>Ya podés volver a la aplicación e iniciar sesión.</p>
+        </div>
+      `);
   
     } catch (err) {
-      return res.status(400).json({
-        message: "Token inválido o expirado.",
-        error: err.message
-      });
+      return res.send(`
+        <div style="font-family:Arial; padding:40px; text-align:center;">
+          <h1 style="color:#d9534f;">Enlace inválido o expirado</h1>
+          <p>Solicitá un nuevo correo de activación.</p>
+        </div>
+      `);
     }
   };
   

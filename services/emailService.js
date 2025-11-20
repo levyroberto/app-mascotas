@@ -45,11 +45,9 @@ class EmailService {
         throw new Error(`Brevo API error: ${response.status} - ${errorText}`);
       }
 
-      console.log("✅ Email enviado correctamente a:", to);
       return await response.json();
 
     } catch (error) {
-      console.error("ERROR BREVO:", error.message); 
       throw new Error("No se pudo enviar el correo de activación");
     }
   }
