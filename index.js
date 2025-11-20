@@ -1,7 +1,7 @@
-import Server from './server.js';
-import dotenv from 'dotenv';
-
+import dotenv from "dotenv";
 dotenv.config();
+
+import Server from './server.js';
 
 const PORT = process.env.PORT || 3000;
 

@@ -1,7 +1,7 @@
 import Usuario  from '../models/usuario/index.js';
 import Mascota from '../models/mascota/index.js';
 import jwt from 'jsonwebtoken';
-import EmailService from '../services/emailService.js';
+import getEmailService from '../services/emailServiceSingleton.js';
 
 class ControllerUsuarios {
   obtenerTodos = async (req, res) => {
@@ -57,11 +57,10 @@ class ControllerUsuarios {
       );
 
       const link = `${process.env.BASE_URL}/api/usuarios/activar/${token}`;
+      
+      const emailService = getEmailService();
 
-      await EmailService.enviar(
-        email,
-        "Activa tu cuenta",
-        `
+      await emailService.enviar(email, "Activa tu cuenta", `
         <div style="font-family:Arial,Helvetica,sans-serif; padding:20px; max-width:500px; margin:auto; background:#ffffff; color:#333; border-radius:8px;">
       
           <h2 style="text-align:center; color:#222;">Bienvenido, ${nombreCompleto}</h2>
@@ -99,16 +98,12 @@ class ControllerUsuarios {
           </p>
       
         </div>
-        `
-      );
-      
+        `);
 
-      return res.status(201).json({
-        message: 'Usuario creado. Revisa tu email para activarlo.'
-      });
-  
+      return res.status(201).json({ message: 'Usuario creado. Revisa tu email para activarlo.' });
+
     } catch (error) {
-      res.status(400).json({ message: error.message });
+      return res.status(400).json({ message: error.message });
     }
   };
 

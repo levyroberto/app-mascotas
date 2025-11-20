@@ -14,7 +14,6 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "@sendinblue/client": "^3.3.1",
     "axios": "^1.13.2",
     "bcryptjs": "^3.0.3",
     "chai": "^6.2.1",
@@ -24,6 +23,7 @@
     "jsonwebtoken": "^9.0.2",
     "mocha": "^11.7.5",
     "mongoose": "^8.19.3",
+    "sib-api-v3-sdk": "^8.5.0",
     "supertest": "^7.1.4"
   },
   "devDependencies": {
