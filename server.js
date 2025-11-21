@@ -2,6 +2,7 @@ import express from 'express';
 import RouterUsuarios from './router/usuariosRouter.js';
 import RouterMascotas from './router/mascotasRouter.js';
 import RouterAuth from './router/authRoutes.js';
+import RouterAnimales from './router/animalesRouter.js';
 import { conectarDB } from './config/db.js';
 
 class Server {
@@ -30,8 +31,9 @@ class Server {
     app.use('/api/usuarios', this.#routerUsuarios);
     app.use('/api/mascotas', this.#routerMascotas);
     app.use('/api/auth', RouterAuth);
+    app.use('/api', RouterAnimales);
 
-    const server = app.listen(this.#port, () => {
+    const server = app.listen(this.#port,"0.0.0.0", () => {
       console.log(`Servidor escuchando en http://localhost:${this.#port}`);
       console.log(`Persistencia: ${process.env.MODO_PERSISTENCIA}`);
     });
