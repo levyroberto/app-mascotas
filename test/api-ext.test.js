@@ -5,11 +5,11 @@ import supertest  from "supertest"
 import generador from "./generador/persona.js"
 import generadorMascota from './generador/mascota.js'
 
-const request   = supertest('http://localhost:3000')
+const request  = supertest('http://localhost:3000')
 
 const credencialesUsuario = {
-    email: "sa.gonzalez98@hotmail.com",
-    password: "12345"  
+    email: "robertolevyadtr@gmail.com",
+    password: "123"  
 };
 
 /* 
@@ -26,6 +26,7 @@ describe('*** Test del servicio Registro ***', () => {
 
         // 2. Enviamos
         const response = await request.post('/api/usuarios').send(usuarioNuevo);
+        console.log(response.body);
 
         // 3. Verificamos Status
         expect(response.status).to.eql(201);
@@ -48,6 +49,7 @@ describe('*** Test del servicio Registro ***', () => {
 
     });
 })
+    
 /* 
     =============================
            Logeo de Usuario
@@ -88,7 +90,6 @@ describe('*** Test del servicio Logeo ***', () => {
         expect(response.body.message).to.eql('Credenciales inválidas');
     });
 });
-
 /* 
     =============================
          Registro de Mascota
@@ -96,41 +97,43 @@ describe('*** Test del servicio Logeo ***', () => {
 */
 describe('*** Test servicio mascota ***', () => {
 
-    let token; // Aquí guardaremos el token del usuario "sa.gonzalez98"
+    let token;
 
-    // 1. PRIMERO: Nos logueamos con ESE usuario para obtener su token
     before(async () => {
-        const response = await request.post('/api/auth/login').send(credencialesUsuario);
-        token = response.body.token; 
+        const response = await request
+            .post('/api/auth/login')
+            .send(credencialesUsuario);
+
+        token = response.body.token;
     });
 
     it('Debería registrar una mascota para el usuario de las credenciales', async () => {
-        
-        // 2. BUSCAMOS SU ID:
-        // Como el login no nos da el ID, usamos el token para pedir la lista de usuarios
-        // y buscamos el que coincida con nuestro email.
-        const resUsuarios = await request.get('/api/usuarios')
+
+        // 1) OBTENER USUARIO
+        const resUsuarios = await request
+            .get('/api/usuarios/')
             .set('Authorization', `Bearer ${token}`);
-        
-        // Buscamos en el array de usuarios el que tenga el email "sa.gonzalez98@hotmail.com"
-        const miUsuario = resUsuarios.body.find(u => u.email === credencialesUsuario.email);
-        const miId = miUsuario._id; // ¡Este es el ID que necesitamos!
 
-        // 3. GENERAMOS LA MASCOTA:
+        const miUsuario = resUsuarios.body.find(
+            u => u.email === credencialesUsuario.email
+        );
+
+        // *** ESTA línea es la que falta ***
+        const miId = miUsuario._id;
+
+        // 2) GENERAR MASCOTA
         const nuevaMascota = generadorMascota.get();
-        nuevaMascota.usuarioId = miId; // Le asignamos el ID que acabamos de encontrar
+        nuevaMascota.usuarioId = miId;
 
-        // 4. ENVIAMOS LA PETICIÓN DE REGISTRO DE MASCOTA:
-        const response = await request.post('/api/mascotas')
-                .set('Authorization', `Bearer ${token}`)
-                .send(nuevaMascota);
+        // 3) ENVIAR
+        const response = await request
+            .post('/api/mascotas')
+            .set('Authorization', `Bearer ${token}`)
+            .send(nuevaMascota);
 
-            expect(response.status).to.eql(201);
-
-        // 5. VALIDAMOS:
-        expect(response.status).to.eql(201); // Que se haya creado
-        expect(response.body.usuarioId).to.eql(miId); // Que pertenezca a nuestro usuario
-        expect(response.body.nombre).to.eql(nuevaMascota.nombre); // Que el nombre sea correcto
+        // 4) VALIDAR
+        expect(response.status).to.eql(201);
+        expect(response.body.usuarioId).to.eql(miId);
+        expect(response.body.nombre).to.eql(nuevaMascota.nombre);
     });
-
 });
