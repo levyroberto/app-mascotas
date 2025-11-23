@@ -41,6 +41,24 @@ usuarioSchema.pre('save', async function (next) {
   next();
 });
 
+usuarioSchema.pre('findOneAndUpdate', async function (next) {
+  const update = this.getUpdate();
+
+  if (!update.password) return next();
+
+  try {
+    const salt = await bcrypt.genSalt(10);
+    const hashed = await bcrypt.hash(update.password, salt);
+
+    update.password = hashed;
+    this.setUpdate(update);
+
+    next();
+  } catch (err) {
+    next(err);
+  }
+});
+
 usuarioSchema.methods.compararPassword = function (passwordPlano) {
   return bcrypt.compare(passwordPlano, this.password);
 };
