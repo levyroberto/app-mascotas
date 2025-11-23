@@ -1,8 +1,15 @@
 import axios from "axios";
 
-const BASE_URL =  process.env.MOCKAPI_BASE_URL;
+function getBaseUrl() {
+  const url = process.env.MOCKAPI_BASE_URL;
+  if (!url) {
+    throw new Error("MOCKAPI_BASE_URL no está configurada en las variables de entorno");
+  }
+  return url;
+}
 
 export async function obtenerTipoPorNombre(nombreTipo) {
+  const BASE_URL = getBaseUrl();
   const url = `${BASE_URL}/animals`;
 
   const res = await axios.get(url, {
@@ -13,6 +20,7 @@ export async function obtenerTipoPorNombre(nombreTipo) {
 }
 
 export async function obtenerRazasPorTipo(typeId) {
+  const BASE_URL = getBaseUrl();
   const url = `${BASE_URL}/raza`;
 
   const res = await axios.get(url, {
