@@ -2,6 +2,7 @@ import Usuario  from '../models/usuario/index.js';
 import Mascota from '../models/mascota/index.js';
 import jwt from 'jsonwebtoken';
 import getEmailService from '../services/emailServiceSingleton.js';
+import { validateEmail } from '../utils/validators.js';
 
 class ControllerUsuarios {
   obtenerTodos = async (req, res) => {
@@ -28,7 +29,6 @@ class ControllerUsuarios {
   guardar = async (req, res) => {
     try {
       const { nombreCompleto, direccion, email, password } = req.body;
-  
 
       const errors = {};
 
@@ -36,8 +36,8 @@ class ControllerUsuarios {
         errors.nombreCompleto = "El nombre es obligatorio";
       }
       
-      if (!email || email.trim() === "") {
-        errors.email = "El email es obligatorio";
+      if (!email || email.trim() === "" || !validateEmail(email)) {
+        errors.email = "El email es obligatorio y debe tener formato válido";
       }
       
       if (!password || password.trim() === "") {
