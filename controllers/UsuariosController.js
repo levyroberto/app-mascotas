@@ -153,15 +153,66 @@ class ControllerUsuarios {
 
   actualizar = async (req, res) => {
     try {
-      const actualizado = await Usuario.actualizar(req.params.id, req.body);
-      if (!actualizado) {
+      const userId = req.params.id;
+      const newData = req.body;
+  
+      const usuarioAntes = await Usuario.obtenerPorId(userId);
+      if (!usuarioAntes) {
         return res.status(404).json({ message: 'Usuario no encontrado' });
       }
+  
+      const emailAntiguo = usuarioAntes.email;
+      const emailNuevo = newData.email;
+  
+      const emailService = getEmailService();
+  
+      if (emailNuevo && emailNuevo !== emailAntiguo) {
+  
+        await emailService.enviar(
+          emailAntiguo,
+          "Tu email fue modificado",
+          `
+          <div style="font-family:Arial;padding:20px;">
+            <h2>Has cambiado tu email</h2>
+            <p>Este mensaje es para avisarte que tu email fue cambiado en tu cuenta.</p>
+  
+            <p><strong>Email anterior:</strong> ${emailAntiguo}</p>
+            <p><strong>Email nuevo:</strong> ${emailNuevo}</p>
+  
+            <p>Si no realizaste este cambio, contactá soporte inmediatamente.</p>
+          </div>
+          `
+        );
+  
+        await emailService.enviar(
+          emailNuevo,
+          "Confirmación de cambio de email",
+          `
+          <div style="font-family:Arial;padding:20px;">
+            <h2>Nuevo email registrado</h2>
+            <p>Este es tu nuevo correo configurado para la cuenta.</p>
+  
+            <p><strong>Email nuevo:</strong> ${emailNuevo}</p>
+  
+            <p>Si no realizaste este cambio, comunicáte con soporte.</p>
+          </div>
+          `
+        );
+      }
+  
+      const actualizado = await Usuario.actualizar(userId, newData);
+  
       res.json(actualizado);
+  
     } catch (error) {
-      res.status(500).json({ message: 'Error al actualizar usuario', error: error.message });
+      console.error("Error al actualizar usuario:", error);
+      res.status(500).json({
+        message: "Error al actualizar usuario",
+        error: error.message
+      });
     }
   };
+  
 
   borrar = async (req, res) => {
     try {
